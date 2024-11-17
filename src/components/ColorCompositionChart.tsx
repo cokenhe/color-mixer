@@ -16,7 +16,7 @@ const ColorCompositionChart: React.FC<{
     <Legend />
     <Tooltip formatter={(value) => `${value}%`} />
     <Pie dataKey="value" data={chartData} cx="50%" cy="50%">
-      {chartData.map((entry, index) => (
+      {chartData.map((_, index) => (
         <Cell key={`cell-${index}`} fill={colors[index]} />
       ))}
     </Pie>
