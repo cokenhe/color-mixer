@@ -1,7 +1,7 @@
 import React from "react";
 import CanvasColorPicker from "./components/CanvasColorPicker";
 import ColorConverter from "./components/ColorConverter";
-import ColorMixer from "./components/ColorPreviewer";
+import ColorMixer from "./components/ColorMixer";
 import ImageUpload from "./components/ImageUpload";
 import { Toggle } from "./components/ui/toggle";
 import { hexToCmyk } from "./utils/colorConverter";
