@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { rgbToHex } from '../utils/colorConverter';
+import React, { useEffect, useRef, useState } from "react";
+import { rgbToHex } from "../utils/colorConverter";
 
 // Centered 10x10 grid
 const GRID_SIZE = 10;
@@ -12,13 +12,13 @@ interface Props {
 const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [colorPreviewStyle, setColorPreviewStyle] =
-    useState<React.CSSProperties>({ display: 'none' });
+    useState<React.CSSProperties>({ display: "none" });
   const [imageData, setImageData] = useState<Uint8ClampedArray | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current || !imageSrc) return;
 
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext("2d");
     if (ctx && imageSrc) {
       const img = new Image();
       img.src = imageSrc;
@@ -37,7 +37,7 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
     const canvasWidth = canvasRef.current.width;
     const canvasHeight = canvasRef.current.height;
 
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext("2d");
     const rect = canvasRef.current.getBoundingClientRect();
     let x = Math.max(0, (event.clientX - rect.left) * (canvasWidth / rect.width));
     let y = Math.max(0, (event.clientY - rect.top) * (canvasHeight / rect.height));
@@ -46,8 +46,8 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
     y -= (GRID_SIZE / 2);
 
     setColorPreviewStyle({
-      display: 'block',
-      position: 'absolute',
+      display: "block",
+      position: "absolute",
       borderRadius: "50%",
       left: `${event.pageX - ((GRID_SIZE * rect.width) / canvasWidth)}px`,
       top: `${event.pageY - ((GRID_SIZE * rect.height) / canvasHeight) + window.scrollY}px`, // Adjust for scroll
@@ -57,7 +57,7 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
       const imageData = ctx.getImageData(x, y, GRID_SIZE, GRID_SIZE).data;
       setImageData(imageData);
 
-      let htmlContent = '';
+      let htmlContent = "";
       for (let i = 0; i < GRID_SIZE; i++) {
         const r = imageData[i * 4 + 0];
         const g = imageData[i * 4 + 1];
@@ -75,13 +75,13 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
   };
 
   const handleMouseLeave = () => {
-    setColorPreviewStyle({ display: 'none' });
+    setColorPreviewStyle({ display: "none" });
   };
 
   const handleMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
 
-    const ctx = canvasRef.current.getContext('2d');
+    const ctx = canvasRef.current.getContext("2d");
     const rect = canvasRef.current.getBoundingClientRect();
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
@@ -100,7 +100,7 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
         onMouseUpCapture={handleMouseUp}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        style={{ border: '1px solid black', position: 'relative' }}
+        style={{ border: "1px solid black", position: "relative" }}
         className="cursor-pointer w-full h-auto object-cover rounded-md shadow-md shadow-gray-400"
       />
       <div
