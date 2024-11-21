@@ -6,13 +6,17 @@ interface Props {
   onColorChange: (color: string) => void;
 }
 
+const GRID_SIZE = 15;
+const PIXEL_SIZE = 15;
+
 const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [colorPreviewStyle, setColorPreviewStyle] =
     useState<React.CSSProperties>({ display: "none" });
+  const [imageData, setImageData] = useState<Uint8ClampedArray | null>(null);
 
   useEffect(() => {
-    if (!canvasRef.current || !imageSrc) return;
+    if (!canvasRef.current || !colorPreviewStyle.display) return;
 
     const ctx = canvasRef.current.getContext("2d");
     if (ctx && imageSrc) {
@@ -30,31 +34,37 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
   const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
 
-    const canvasWidth = canvasRef.current.width;
-    const canvasHeight = canvasRef.current.height;
-
     const ctx = canvasRef.current.getContext("2d");
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = (event.clientX - rect.left) * (canvasWidth / rect.width);
-    const y = (event.clientY - rect.top) * (canvasHeight / rect.height);
+
+    const canvasWidth = canvasRef.current.width;
+    const canvasHeight = canvasRef.current.height;
+    let x = Math.max(
+      0,
+      (event.clientX - rect.left) * (canvasWidth / rect.width),
+    );
+    let y = Math.max(
+      0,
+      (event.clientY - rect.top) * (canvasHeight / rect.height),
+    );
+
+    x -= GRID_SIZE / 2;
+    y -= GRID_SIZE / 2;
 
     setColorPreviewStyle({
       display: "block",
       position: "absolute",
       borderRadius: "50%",
-      border: "1px solid black",
-      left: `${event.pageX - 25}px`,
-      top: `${event.pageY - 75}px`,
+      overflow: "hidden",
+      width: `${GRID_SIZE * PIXEL_SIZE}px`,
+      height: `${GRID_SIZE * PIXEL_SIZE}px`,
+      left: `${event.pageX - (GRID_SIZE * PIXEL_SIZE) / 2}px`,
+      top: `${event.pageY - GRID_SIZE * PIXEL_SIZE - 50}px`,
     });
 
     if (ctx) {
-      const imageData = ctx.getImageData(x, y, 1, 1).data;
-      setColorPreviewStyle((styles) => ({
-        ...styles,
-        backgroundColor: `rgb(${imageData[0]}, ${imageData[1]}, ${imageData[2]})`,
-        width: "50px",
-        height: "50px",
-      }));
+      const imageData = ctx.getImageData(x, y, GRID_SIZE, GRID_SIZE).data;
+      setImageData(imageData);
     }
   };
 
@@ -67,8 +77,19 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
 
     const ctx = canvasRef.current.getContext("2d");
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const canvasWidth = canvasRef.current.width;
+    const canvasHeight = canvasRef.current.height;
+    let x = Math.max(
+      0,
+      (event.clientX - rect.left) * (canvasWidth / rect.width),
+    );
+    let y = Math.max(
+      0,
+      (event.clientY - rect.top) * (canvasHeight / rect.height),
+    );
+
+    x -= GRID_SIZE / 2;
+    y -= GRID_SIZE / 2;
 
     if (ctx) {
       const imageData = ctx.getImageData(x, y, 1, 1).data;
@@ -85,9 +106,43 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ border: "1px solid black", position: "relative" }}
-        className="h-full w-full cursor-pointer rounded-md object-cover shadow-md shadow-gray-400"
+        className="h-auto w-[80%] cursor-pointer rounded-md object-cover shadow-md shadow-gray-400"
       />
-      <div style={colorPreviewStyle}></div>
+      <div
+        id="color-preview-container"
+        style={colorPreviewStyle}
+        ref={(el) => {
+          if (!canvasRef.current || !colorPreviewStyle.display) return;
+          if (!(el && imageData && colorPreviewStyle.display === "block"))
+            return;
+
+          el.innerHTML = "";
+
+          let parentElement: HTMLDivElement = document.createElement("div");
+          for (let i = 0; i < GRID_SIZE * GRID_SIZE; ++i) {
+            const r = imageData[i * 4 + 0];
+            const g = imageData[i * 4 + 1];
+            const b = imageData[i * 4 + 2];
+
+            let childElement = document.createElement("div");
+            childElement.style.width = `${PIXEL_SIZE}px`;
+            childElement.style.height = `${PIXEL_SIZE}px`;
+            childElement.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+
+            if (i === Math.floor((GRID_SIZE * GRID_SIZE) / 2)) {
+              childElement.style.border = "1px solid black";
+            }
+
+            if (i % GRID_SIZE === 0) {
+              parentElement = document.createElement("div");
+              parentElement.style.display = "flex";
+            }
+
+            parentElement.appendChild(childElement);
+            el.appendChild(parentElement);
+          }
+        }}
+      ></div>
     </div>
   );
 };
