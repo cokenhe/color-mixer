@@ -18,14 +18,24 @@ const ImageUpload: FC<{ onFileChange: (src: string) => void }> = ({
     reader.readAsDataURL(file);
   };
 
+  const handleOnClick = () => {
+    const input = document.getElementById("image-upload") as HTMLInputElement;
+    input.click();
+  };
+
   return (
-    <div className="max-w-sm flex flex-col gap-y-2 items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-md">
+    <div
+      onClick={handleOnClick}
+      className="h-auto min-h-[200px] max-w-[400px] cursor-pointer content-center justify-items-center rounded-md border-2 border-dashed border-gray-300 p-4"
+    >
       <Label htmlFor="image-upload">Upload Image</Label>
       <Input
+        className="cursor-pointer"
         id="image-upload"
         type="file"
         accept="image/*"
         onChange={handleFileChange}
+        onClick={(e) => e.stopPropagation()}
       />
     </div>
   );

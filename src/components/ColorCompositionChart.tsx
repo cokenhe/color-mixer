@@ -1,4 +1,11 @@
-import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import { cmykToHex } from "../utils/colorConverter";
 
 const defaultChartColor = [
@@ -12,15 +19,23 @@ const ColorCompositionChart: React.FC<{
   chartData: any[];
   colors?: string[];
 }> = ({ chartData, colors = defaultChartColor }) => (
-  <PieChart width={400} height={300}>
-    <Legend />
-    <Tooltip formatter={(value) => `${value}%`} />
-    <Pie dataKey="value" data={chartData} cx="50%" cy="50%">
-      {chartData.map((_, index) => (
-        <Cell key={`cell-${index}`} fill={colors[index]} />
-      ))}
-    </Pie>
-  </PieChart>
+  <ResponsiveContainer width="100%" height={300} minWidth={240}>
+    <PieChart>
+      <Legend />
+      <Tooltip formatter={(value) => `${value}%`} />
+      <Pie
+        dataKey="value"
+        data={chartData}
+        cx="50%"
+        cy="50%"
+        isAnimationActive={false}
+      >
+        {chartData.map((_, index) => (
+          <Cell key={`cell-${index}`} fill={colors[index]} />
+        ))}
+      </Pie>
+    </PieChart>
+  </ResponsiveContainer>
 );
 
 export default ColorCompositionChart;

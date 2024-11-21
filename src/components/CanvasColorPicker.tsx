@@ -78,14 +78,14 @@ const CanvasColorPicker: React.FC<Props> = ({ imageSrc, onColorChange }) => {
   };
 
   return (
-    <div className="max-w-[80%]">
+    <div className="h-auto w-full">
       <canvas
         ref={canvasRef}
         onMouseUpCapture={handleMouseUp}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ border: "1px solid black", position: "relative" }}
-        className="cursor-pointer w-full h-full object-cover rounded-md shadow-md shadow-gray-400"
+        className="h-full w-full cursor-pointer rounded-md object-cover shadow-md shadow-gray-400"
       />
       <div style={colorPreviewStyle}></div>
     </div>
